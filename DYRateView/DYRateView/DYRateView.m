@@ -95,6 +95,8 @@ static NSString *DefaultEmptyStarImageFilename = @"StarEmpty.png";
 
 - (void)drawRect:(CGRect)rect
 {
+    CGFloat starDimension = self.bounds.size.height;
+    
     switch (_alignment) {
         case RateViewAlignmentLeft:
         {
@@ -103,32 +105,33 @@ static NSString *DefaultEmptyStarImageFilename = @"StarEmpty.png";
         }
         case RateViewAlignmentCenter:
         {
-            _origin = CGPointMake((self.bounds.size.width - _numOfStars * _fullStarImage.size.width - (_numOfStars - 1) * _padding)/2, 0);
+            _origin = CGPointMake((self.bounds.size.width - _numOfStars * starDimension - (_numOfStars - 1) * _padding)/2, 0);
             break;
         }
         case RateViewAlignmentRight:
         {
-            _origin = CGPointMake(self.bounds.size.width - _numOfStars * _fullStarImage.size.width - (_numOfStars - 1) * _padding, 0);
+            _origin = CGPointMake(self.bounds.size.width - _numOfStars * starDimension - (_numOfStars - 1) * _padding, 0);
             return;
         }
     }
 
     float x = _origin.x;
     for(int i = 0; i < _numOfStars; i++) {
-        [_emptyStarImage drawAtPoint:CGPointMake(x, _origin.y)];
-        x += _fullStarImage.size.width + _padding;
+        [_emptyStarImage drawInRect:CGRectMake(x, 0.0, starDimension, starDimension)];
+        x += starDimension + _padding;
     }
 
 
     float floor = floorf(_rate);
     x = _origin.x;
     for (int i = 0; i < floor; i++) {
-        [_fullStarImage drawAtPoint:CGPointMake(x, _origin.y)];
-        x += _fullStarImage.size.width + _padding;
+        [_fullStarImage drawInRect:CGRectMake(x, 0.0, starDimension, starDimension)];
+//        [_fullStarImage drawAtPoint:CGPointMake(x, _origin.y)];
+        x += starDimension + _padding;
     }
 
     if (_numOfStars - floor > 0.01) {
-        UIRectClip(CGRectMake(x, _origin.y, _fullStarImage.size.width * (_rate - floor), _fullStarImage.size.height));
+        UIRectClip(CGRectMake(x, _origin.y, starDimension * (_rate - floor), starDimension));
         [_fullStarImage drawAtPoint:CGPointMake(x, _origin.y)];
     }
 }
@@ -170,7 +173,7 @@ static NSString *DefaultEmptyStarImageFilename = @"StarEmpty.png";
 
 - (void)handleTouchAtLocation:(CGPoint)location {
     for(int i = _numOfStars - 1; i > -1; i--) {
-        if (location.x > _origin.x + i * (_fullStarImage.size.width + _padding) - _padding / 2.) {
+        if (location.x > _origin.x + i * (self.bounds.size.height + _padding) - _padding / 2.) {
             self.rate = i + 1;
             return;
         }
